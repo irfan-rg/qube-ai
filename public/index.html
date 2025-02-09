@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #chat-container {
+      width: 400px;
+      height: 600px;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin: 5px 0;
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: #007AFF;
+      color: #fff;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: #E9E9EB;
+      color: #000;
+    }
+
+    #input-container {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    #send-btn {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background-color: #007AFF;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #send-btn:hover {
+      background-color: #045ebd;
+    }
+
+    /* Header styles with centered content */
+    #chat-header {
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-picture {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: #383838;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .contact-name {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .status {
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="chat-header">
+      <div class="profile-picture">
+        <span>A</span>
+      </div>
+      <div class="header-info">
+        <div class="contact-name">Contact Name</div>
+        <div class="status">Online</div>
+      </div>
+    </div>
+    <div id="chat-box">
+      <!-- Messages will be appended here -->
+    </div>
+    <div id="input-container">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // Function to add messages to the chat
+    function addMessage(content, isUser = true) {
+      const message = document.createElement('div');
+      message.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+      message.textContent = content;
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+    }
+
+    // Function to fetch response from the backend
+    async function getBotResponse(userMessage) {
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMessage }),
+        });
+
+        if (!response.ok) {
+          const errorDetails = await response.text();
+          console.error('Error from server:', errorDetails);
+          addMessage('Sorry, there was an error. Please try again later.', false);
+          return;
+        }
+
+        const data = await response.json();
+        if (data.reply) {
+          addMessage(data.reply, false); // Bot message
+        } else {
+          addMessage('Sorry, I did not understand that.', false);
+        }
+      } catch (error) {
+        console.error('Network Error:', error);
+        addMessage('Sorry, there was a network error. Please try again later.', false);
+      }
+    }
+
+    // Event listener for the Send button
+    sendBtn.addEventListener('click', () => {
+      const userMessage = userInput.value.trim();
+      if (userMessage) {
+        addMessage(userMessage); // User message
+        userInput.value = ''; // Clear input
+        getBotResponse(userMessage); // Fetch bot response
+      }
+    });
+
+    // Handle Enter key to send message
+    userInput.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
