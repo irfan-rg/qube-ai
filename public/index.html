@@ -176,7 +176,7 @@
         if (!response.ok) {
           const errorDetails = await response.text();
           console.error('Error from server:', errorDetails);
-          addMessage('Sorry, there was an error. Please try again later.', false);
+          addMessage('Please contact the administrator to set up the API credentials.', false);
           return;
         }
 
@@ -188,7 +188,7 @@
         }
       } catch (error) {
         console.error('Network Error:', error);
-        addMessage('Sorry, there was a network error. Please try again later.', false);
+        addMessage('Please contact the administrator to set up the API credentials.', false);
       }
     }
 
