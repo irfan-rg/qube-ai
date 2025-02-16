@@ -1,4 +1,4 @@
-# Google Natural Language API Chat Application
+# Natural Language API Chat Application
 
 A real-time chat application that leverages Google Cloud Natural Language API to provide intelligent message analysis, including sentiment detection and entity recognition in conversations.
 
