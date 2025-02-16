@@ -127,10 +127,10 @@
   <div id="chat-container">
     <div id="chat-header">
       <div class="profile-picture">
-        <span>A</span>
+        <span>Q</span>
       </div>
       <div class="header-info">
-        <div class="contact-name">Contact Name</div>
+        <div class="contact-name">Qube AI</div>
         <div class="status">Online</div>
       </div>
     </div>
@@ -166,6 +166,13 @@
           body: JSON.stringify({ message: userMessage }),
         });
 
+        if (response.status === 503) {
+          const data = await response.json();
+          addMessage('⚠️ ' + data.message, false);
+          addMessage('Please contact the administrator to set up the API credentials.', false);
+          return;
+        }
+
         if (!response.ok) {
           const errorDetails = await response.text();
           console.error('Error from server:', errorDetails);
@@ -175,7 +182,7 @@
 
         const data = await response.json();
         if (data.reply) {
-          addMessage(data.reply, false); // Bot message
+          addMessage(data.reply, false);
         } else {
           addMessage('Sorry, I did not understand that.', false);
         }

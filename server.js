@@ -17,6 +17,13 @@ const languageClient = new LanguageServiceClient({
 
 // Chatbot Route
 app.post('/api/chat', async (req, res) => {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    return res.status(503).send({
+      error: 'API not configured',
+      message: 'Please configure the Google Cloud API credentials to use this chatbot.'
+    });
+  }
+
   const userMessage = req.body.message;
 
   if (!userMessage) {
