@@ -1,14 +1,17 @@
 {
+  "name": "qube-local-ai-chatbot",
+  "version": "2.0.0",
+  "description": "A free, local AI chatbot powered by Ollama and Llama 3.2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
   "dependencies": {
-    "@google-cloud/language": "^6.5.0",
-    "@huggingface/inference": "^2.8.1",
-    "axios": "^1.7.9",
     "body-parser": "^1.20.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "google-auth-library": "^9.15.0",
-    "googleapis": "^144.0.0",
-    "node-fetch": "^2.7.0",
-    "openai": "^4.77.0"
-  }
+    "express": "^4.21.2"
+  },
+  "keywords": ["chatbot", "ai", "ollama", "llama", "local", "free"],
+  "author": "Qube AI",
+  "license": "MIT"
 }
