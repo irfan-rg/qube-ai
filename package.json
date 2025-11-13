@@ -1,7 +1,7 @@
 {
   "name": "qube-local-ai-chatbot",
-  "version": "2.0.0",
-  "description": "A free, local AI chatbot powered by Ollama and Llama 3.2",
+  "version": "3.0.0",
+  "description": "Free online chatbot with Groq",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,9 +9,21 @@
   },
   "dependencies": {
     "body-parser": "^1.20.3",
-    "express": "^4.21.2"
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "node-fetch": "^2.7.0"
   },
-  "keywords": ["chatbot", "ai", "ollama", "llama", "local", "free"],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "chatbot",
+    "ai",
+    "ollama",
+    "llama",
+    "local",
+    "free"
+  ],
   "author": "Qube AI",
   "license": "MIT"
 }

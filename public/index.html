@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chatbot</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="favicon.svg">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,21 +45,42 @@
 
     .user-message {
       align-self: flex-end;
+      line-height: 1.5;
       background-color: #007AFF;
+      letter-spacing: normal;
       border-radius: 20px 20px 5px 20px;
       color: #fff;
     }
 
     .bot-message {
       align-self: flex-start;
-      background-color: #E9E9EB;
+      background-color: #dedede;
       color: #000;
+      line-height: 1.5;
+      letter-spacing: normal;
       border: 1px solid #d1d1d1;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       border-radius: 20px 20px 20px 5px;
-      font-style:italic;
       position: relative;
       animation: fadeInBot 0.4s;
+    }
+
+    .error-message {
+      align-self: flex-start;
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef5350;
+      border-radius: 20px 20px 20px 5px;
+      padding: 10px 15px;
+      margin: 5px 0;
+      max-width: 80%;
+      font-size: 0.9em;
+    }
+
+    .error-message strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 1.05em;
     }
 
     @keyframes fadeInBot {
@@ -131,6 +152,11 @@
 
     #send-btn:hover {
       background-color: #045ebd;
+    }
+
+    #send-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
 
     /* Header styles with centered content */
@@ -273,28 +299,13 @@
         min-height: -webkit-fill-available;
       }
     }
-    .copy-btn {
-      background: none;
-      border: none;
-      color: #707070;
-      font-size: 1em;
-      font-weight: bold;
-      margin-left: 8px;
-      cursor: pointer;
-      vertical-align: middle;
-      transition: color 0.2s;
-      outline: none;
-      padding: 0 2px;
-    }
-    .copy-btn:hover {
-      color: #007AFF;
-    }
+
     .bot-message code, .bot-message pre {
       background: #f4f4f4;
       border-radius: 4px;
       padding: 2px 5px;
       font-family: 'Fira Mono', 'Consolas', monospace;
-      font-size: 0.98em;
+      font-size: 0.95em;
     }
     .bot-message pre {
       display: block;
@@ -302,31 +313,56 @@
       margin: 8px 0;
       overflow-x: auto;
     }
-    .bot-message ul {
-      margin: 6px 0 6px 18px;
+    .bot-message ul, .bot-message ol {
+      margin: 10px 0 10px 20px;
       padding: 0;
+      line-height: 1.6;
     }
     .bot-message li {
-      margin: 2px 0;
+      margin: 6px 0;
+      padding-left: 4px;
+    }
+    .bot-message p {
+      margin: 8px 0;
+      line-height: 1.5;
     }
     .bot-message a {
       color: #007AFF;
       text-decoration: underline;
+    }
+    .bot-message strong {
+      font-weight: 600;
+    }
+
+    #welcome-message {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      font-weight: bolder;
+      text-align: center;
+      color: #ccc;
+      font-size: 1.5em;
+      font-weight: 300;
     }
   </style>
 </head>
 <body>
   <div id="chat-container">
     <div id="chat-header">
-      <div class="profile-picture">
-        <span>Q</span>
+      <div class="profile-picture" aria-hidden="false" role="img" aria-label="Qube logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-squirrel-icon lucide-squirrel" focusable="false" aria-hidden="true"><path d="M15.236 22a3 3 0 0 0-2.2-5"/><path d="M16 20a3 3 0 0 1 3-3h1a2 2 0 0 0 2-2v-2a4 4 0 0 0-4-4V4"/><path d="M18 13h.01"/><path d="M18 6a4 4 0 0 0-4 4 7 7 0 0 0-7 7c0-5 4-5 4-10.5a4.5 4.5 0 1 0-9 0 2.5 2.5 0 0 0 5 0C7 10 3 11 3 17c0 2.8 2.2 5 5 5h10"/></svg>
       </div>
       <div class="header-info">
         <div class="contact-name">Qube AI</div>
-        <div class="status">Online</div>
+        <div class="status">Powered by Groq</div>
       </div>
     </div>
     <div id="chat-box">
+      <div id="welcome-message">Welcome to Qube AI</div>
+      
       <!-- Messages will be appended here -->
     </div>
     <div id="input-container">
@@ -384,31 +420,71 @@
       chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
     }
 
+    // Function to add error messages
+    function addErrorMessage(errorCode, message) {
+      removeTypingIndicator();
+      const welcomeMessage = document.getElementById('welcome-message');
+      if (welcomeMessage) welcomeMessage.remove();
+
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      
+      let errorTitle = '⚠️ Error';
+      let errorDetails = message;
+      let helpText = '';
+
+      // Customize based on error type
+      if (errorCode === 'GROQ_API_KEY_MISSING') {
+        errorTitle = '🔑 API Key Missing';
+        helpText = '<br><br>📝 Add this to your .env file:<br><code>GROQ_API_KEY=your_key_here</code>';
+      } else if (errorCode === 'INVALID_API_KEY') {
+        errorTitle = '❌ Invalid API Key';
+        helpText = '<br><br>Get a free key at: <a href="https://console.groq.com" target="_blank">console.groq.com</a>';
+      } else if (errorCode === 'RATE_LIMIT_EXCEEDED') {
+        errorTitle = '⏱️ Rate Limit Reached';
+        helpText = '<br><br>Free tier: 14,400 requests/day. Please wait a moment.';
+      } else if (errorCode === 'SERVICE_UNAVAILABLE') {
+        errorTitle = '🔧 Service Unavailable';
+        helpText = '<br><br>Groq servers might be busy. Try again in a moment.';
+      }
+
+      errorDiv.innerHTML = `<strong>${errorTitle}</strong>${errorDetails}${helpText}`;
+      chatBox.appendChild(errorDiv);
+      smoothScrollToBottom();
+    }
+
     // Function to add messages to the chat
     function addMessage(content, isUser = true, animated = false) {
+      // Remove welcome message on first message
+      const welcomeMessage = document.getElementById('welcome-message');
+      if (welcomeMessage) {
+        welcomeMessage.remove();
+      }
+
       if (!isUser) removeTypingIndicator();
       if (animated && !isUser) {
-        // 1. Animate plain text in a temporary element
-        const tempMessage = document.createElement('div');
-        tempMessage.className = 'message bot-message';
-        chatBox.appendChild(tempMessage);
+        // Typing animation with formatted markdown - NO FLASH!
+        const message = document.createElement('div');
+        message.className = 'message bot-message';
+        chatBox.appendChild(message);
+        
+        // Pre-format the entire content as markdown
+        const formattedContent = formatBotMessage(content);
+        
+        // Create a temporary div to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = formattedContent;
+        const textContent = tempDiv.textContent || tempDiv.innerText;
+        
         let i = 0;
         function typeLetter() {
-          if (i <= content.length) {
-            let partial = content.slice(0, i).replace(/[&<>]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[tag]));
-            tempMessage.innerHTML = partial.replace(/\n/g, '<br>');
+          if (i <= textContent.length) {
+            // Get partial text and re-format it
+            const partialText = content.slice(0, i);
+            message.innerHTML = formatBotMessage(partialText);
             smoothScrollToBottom();
             i++;
             setTimeout(typeLetter, 15);
-          } else {
-            // 2. After animation, remove temp and insert formatted message
-            chatBox.removeChild(tempMessage);
-            const finalMessage = document.createElement('div');
-            finalMessage.className = 'message bot-message';
-            finalMessage.innerHTML = formatBotMessage(content);
-            addCopyButton(finalMessage, content);
-            chatBox.appendChild(finalMessage);
-            smoothScrollToBottom();
           }
         }
         typeLetter();
@@ -417,25 +493,9 @@
         const message = document.createElement('div');
         message.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
         message.innerHTML = isUser ? content : formatBotMessage(content);
-        if (!isUser) addCopyButton(message, content);
         chatBox.appendChild(message);
         smoothScrollToBottom();
       }
-    }
-
-    // Add copy-to-clipboard button for bot messages
-    function addCopyButton(messageElem, content) {
-      const btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.title = 'Copy to clipboard';
-      btn.innerHTML = '🗐';
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        navigator.clipboard.writeText(content);
-        btn.innerHTML = '✓';
-        setTimeout(() => { btn.innerHTML = '🗐'; }, 1200);
-      };
-      messageElem.appendChild(btn);
     }
 
     // Function to fetch response from the backend
@@ -448,21 +508,14 @@
           body: JSON.stringify({ message: userMessage }),
         });
 
-        if (response.status === 503) {
-          const data = await response.json();
-          addMessage('⚠️ ' + data.message, false);
-          addMessage('Please contact the administrator to set up the API credentials.', false);
-          return;
-        }
+        const data = await response.json();
 
         if (!response.ok) {
-          const errorDetails = await response.text();
-          console.error('Error from server:', errorDetails);
-          addMessage('Please contact the administrator to set up the API credentials.', false);
+          // Handle Groq-specific errors
+          addErrorMessage(data.error, data.message);
           return;
         }
 
-        const data = await response.json();
         if (data.reply) {
           addMessage(data.reply, false, true); // Animate bot reply
         } else {
@@ -470,7 +523,7 @@
         }
       } catch (error) {
         console.error('Network Error:', error);
-        addMessage('Please contact the administrator to set up the API credentials.', false);
+        addErrorMessage('NETWORK_ERROR', 'Unable to connect to server. Please check your connection.');
       }
     }
 

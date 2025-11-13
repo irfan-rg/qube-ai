@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -6,46 +8,45 @@ const path = require('path');
 const app = express();
 app.use(bodyParser.json());
 
-// Ollama configuration
-const OLLAMA_BASE_URL = 'http://localhost:11434';
-const MODEL_NAME = 'llama3.2:3b'; // Lightweight model perfect for chatbots
+// Groq configuration
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || ''; // Get free from console.groq.com
 
-// Function to check if Ollama is running
-async function checkOllamaStatus() {
-  try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-}
-
-// Function to generate AI response using Ollama
+// Function to generate AI response using Groq
 async function generateResponse(userMessage) {
   try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+    const response = await fetch(GROQ_API_URL, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: MODEL_NAME,
-        prompt: userMessage,
-        stream: false,
-        options: {
-          temperature: 0.7, // Balanced creativity
-          top_p: 0.9,
-          max_tokens: 500 // Reasonable response length
-        }
+        model: 'llama-3.3-70b-versatile', // Fast and powerful model
+        messages: [
+          {
+            role: 'system',
+            content: 'You are Qube AI, a helpful and friendly assistant. Keep responses concise and engaging.'
+          },
+          {
+            role: 'user',
+            content: userMessage
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+        top_p: 0.9
       })
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Groq API Error:', errorText);
+      throw new Error(`Groq API error: ${response.status}`);
     }
 
     const data = await response.json();
-    return data.response || "Sorry, I couldn't generate a response.";
+    return data.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
   } catch (error) {
     console.error('Error generating response:', error);
     throw error;
@@ -61,13 +62,11 @@ app.post('/api/chat', async (req, res) => {
   }
 
   try {
-    // Check if Ollama is running
-    const isOllamaRunning = await checkOllamaStatus();
-    
-    if (!isOllamaRunning) {
+    // Check if API key is configured
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'YOUR_GROQ_API_KEY_HERE') {
       return res.status(503).json({
-        error: 'Ollama not running',
-        message: 'Please start Ollama service and ensure the model is loaded. Run: ollama serve && ollama pull llama3.2:3b'
+        error: 'API key not configured',
+        message: 'Please set your Groq API key in environment variables'
       });
     }
 
@@ -86,11 +85,10 @@ app.post('/api/chat', async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
-  const isOllamaRunning = await checkOllamaStatus();
   res.json({ 
-    status: isOllamaRunning ? 'healthy' : 'unhealthy',
-    ollama: isOllamaRunning,
-    model: MODEL_NAME
+    status: 'healthy',
+    provider: 'Groq',
+    model: 'llama-3.3-70b-versatile'
   });
 });
 
@@ -100,11 +98,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Qube AI Chatbot Server running on http://localhost:${PORT}`);
-  console.log(`🤖 Using local AI model: ${MODEL_NAME}`);
-  console.log(`📡 Ollama API: ${OLLAMA_BASE_URL}`);
-  console.log(`\n💡 To get started:`);
-  console.log(`   1. Start Ollama: ollama serve`);
-  console.log(`   2. Pull model: ollama pull llama3.2:3b`);
-  console.log(`   3. Open: http://localhost:${PORT}`);
+  console.log(`✅ Qube AI Chatbot Server running on http://localhost:${PORT}`);
+  console.log(`⚡ Using Groq (llama-3.3-70b-versatile)`);
+
 });
