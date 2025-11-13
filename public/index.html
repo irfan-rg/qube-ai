@@ -574,6 +574,36 @@
         userInput.style.height = '38px';
       }
     });
+
+    // Mobile keyboard handling: when the on-screen keyboard appears the
+    // viewport often resizes which can leave the latest messages hidden.
+    // Use visualViewport (when available) or window resize to auto-scroll
+    // the chat box a short time after the resize so the keyboard animation
+    // has settled.
+    function handleViewportChange() {
+      // Delay slightly to allow keyboard open/close animation to finish
+      setTimeout(() => {
+        try {
+          smoothScrollToBottom();
+          // Ensure the input is visible as well
+          userInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (e) {
+          // Best-effort; ignore errors
+        }
+      }, 250);
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+    } else {
+      window.addEventListener('resize', handleViewportChange);
+    }
+
+    // When the input receives focus, also ensure we scroll to the bottom
+    // in case the keyboard opens after focus.
+    userInput.addEventListener('focus', () => {
+      setTimeout(() => smoothScrollToBottom(), 300);
+    });
   </script>
 </body>
 </html>

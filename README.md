@@ -1,45 +1,61 @@
-# 🤖 Qube Local AI Chatbot
-
-A beautiful, privacy-first chatbot that runs 100% locally on your machine using [Ollama](https://ollama.com/) and the Llama 3.2 AI model. No API keys, no quotas, no cloud, no cost—just instant, unlimited AI conversations!
-
----
-
-## 🚀 Features
-- **100% Free & Local**: No API keys, no cloud, no usage limits
-- **Privacy-First**: All data stays on your device
-- **Offline Capable**: Works without internet
-- **Fast**: No cold starts, instant responses
-- **Mobile Responsive**: Beautiful UI for desktop and mobile
-- **Easy Setup**: Get started in minutes
-- **Customizable**: Swap models, tweak prompts, and more
+<div align="center">
+  <img src="public/favicon.svg" alt="Qube AI Logo" width="80" height="80">
+  
+  # Qube AI 
+  
+  ### *Lightning-fast AI conversations, powered by Groq*
+  
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://qube-chat.vercel.app/)
+  [![Groq](https://img.shields.io/badge/Powered%20by-Groq-orange?style=for-the-badge)](https://groq.com)
+  [![Llama](https://img.shields.io/badge/Model-Llama%203.3%2070B-green?style=for-the-badge)](https://ai.meta.com/llama/)
+</div>
 
 ---
 
-## 🏗️ Architecture
+A beautiful, lightning-fast chatbot powered by [Groq](https://groq.com/) and the Llama 3.3 70B AI model. Get blazing-fast AI responses with a generous free tier—up to 14,400 requests per day!
+
+> Qube AI is a lightning-fast chatbot with a sleek iOS-style messaging UI. Enjoy instant, beautiful AI conversations powered by Groq.
+
+---
+
+## Features
+- **Lightning Fast**: Powered by Groq's ultra-fast inference engine
+- **Generous Free Tier**: 14,400 requests/day (30 requests/minute)
+- **Powerful AI**: Uses Llama 3.3 70B Versatile model
+- **Mobile Responsive**: Beautiful UI optimized for desktop and mobile
+- **Easy Setup**: Get started in under 2 minutes
+- **Markdown Support**: Rich text formatting in responses
+- **Clean UI**: Modern chat interface with typing indicators
+
+---
+
+## Architecture
 ```
 Frontend (HTML/CSS/JS)
         ↓
 Express.js Backend (Node.js)
         ↓
-Ollama Local AI Model (Llama 3.2)
+Groq Cloud API (Llama 3.3 70B)
 ```
 - The frontend sends chat messages to the backend
-- The backend relays messages to the local Ollama API
-- Ollama generates a response using the Llama 3.2 model
+- The backend relays messages to Groq's API with your API key
+- Groq generates a response using Llama 3.3 70B Versatile
 - The response is sent back to the frontend and displayed instantly
 
 ---
 
 ## ⚡ Quick Start
 
-### 1. **Install Ollama**
-- Download and install from [ollama.com/download](https://ollama.com/download)
-- Or on Windows: `winget install Ollama.Ollama`
+### 1. **Get Your Free Groq API Key**
+- Visit [console.groq.com](https://console.groq.com)
+- Sign up for a free account (no credit card required)
+- Create an API key from the dashboard
+- Copy your API key
 
-### 2. **Start Ollama & Download the Model**
+### 2. **Configure the API Key**
+Create a `.env` file in the project root:
 ```bash
-ollama serve
-ollama pull llama3.2:3b
+GROQ_API_KEY=your_api_key_here
 ```
 
 ### 3. **Install Node.js Dependencies**
@@ -54,21 +70,11 @@ npm start
 
 ### 5. **Chat!**
 - Open [http://localhost:3000](http://localhost:3000) in your browser
-- Start chatting with your local AI 🤖
+- Start chatting with Qube AI 
 
 ---
 
-## 🛠️ Troubleshooting
-- **Ollama not running?**
-  - Run `ollama serve` in a terminal
-- **Model not found?**
-  - Run `ollama pull llama3.2:3b`
-- **Port 3000 in use?**
-  - Stop other apps using that port or change the port in `server.js`
-- **Slow responses?**
-  - Use a smaller model or close other heavy apps
 
----
 
 ## 📦 Project Structure
 ```
@@ -84,24 +90,39 @@ Qube/
 ---
 
 ## 🧠 Model Info
-- **Model**: Llama 3.2 3B (default)
-- **RAM Usage**: ~2GB
-- **Storage**: ~2GB
-- **Response Time**: 1-3 seconds
-- **Change Model**: Edit `MODEL_NAME` in `server.js` and pull the new model with `ollama pull <model>`
+- **Provider**: Groq Cloud API
+- **Model**: Llama 3.3 70B Versatile
+- **Speed**: <1 second response time
+- **Free Tier**: 14,400 requests/day (30 requests/minute)
+- **Max Tokens**: 500 per response (configurable in `server.js`)
+- **Context Window**: 8,192 tokens
+- **Change Model**: Edit `model` in `server.js` (see [Groq models](https://console.groq.com/docs/models))
+
+---
+## 🛠️ Troubleshooting
+- **"API key not configured" error?**
+  - Create a `.env` file with `GROQ_API_KEY=your_key_here`
+  - Make sure the `.env` file is in the project root directory
+- **"Invalid API key" error?**
+  - Get a fresh key from [console.groq.com](https://console.groq.com)
+  - Check for extra spaces or quotes in your `.env` file
+- **Rate limit exceeded?**
+  - Free tier: 14,400 requests/day, 30 requests/minute
+  - Wait a moment or upgrade your Groq plan
+- **Port 3000 in use?**
+  - Stop other apps using that port
+  - Or change `PORT=3001` in your `.env` file
+- **Slow responses?**
+  - Groq is normally very fast (<1 second)
+  - Check your internet connection
+  - Try again in a moment if Groq servers are busy
 
 ---
 
-## 🙏 Credits
-- [Ollama](https://ollama.com/) for local AI serving
+## Credits
+- [Groq](https://groq.com/) for blazing-fast AI inference
 - [Meta](https://ai.meta.com/llama/) for Llama models
-- [Qube AI](https://github.com/) for the beautiful UI
+- [Express.js](https://expressjs.com/) for the backend framework
+- Community contributors
 
 ---
-
-## 📜 License
-MIT
-
----
-
-**Enjoy your unlimited, private, local AI chatbot!**

@@ -1,7 +1,7 @@
 {
-  "name": "qube-local-ai-chatbot",
+  "name": "qube-ai-chatbot",
   "version": "3.0.0",
-  "description": "Free online chatbot with Groq",
+  "description": "Lightning-fast AI chatbot with iOS-style messaging, powered by Groq",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,9 +19,9 @@
   "keywords": [
     "chatbot",
     "ai",
-    "ollama",
+    "groq",
     "llama",
-    "local",
+    "fast",
     "free"
   ],
   "author": "Qube AI",
