@@ -26,7 +26,7 @@ async function generateResponse(userMessage) {
         messages: [
           {
             role: 'system',
-            content: 'You are Qube AI, a helpful and friendly assistant. Keep responses concise and engaging.'
+            content: 'You are Qube AI, a helpful and friendly assistant. Keep responses concise and engaging.Try to finish answer within the token limit(1024).'
           },
           {
             role: 'user',
@@ -34,7 +34,7 @@ async function generateResponse(userMessage) {
           }
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 1024,
         top_p: 0.9
       })
     });
